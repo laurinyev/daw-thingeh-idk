@@ -18,9 +18,9 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "Dunno wtf to call this",
+        "DawThingy",
         native_options,
-        Box::new(|cc| Ok(Box::new(daw_thingy::TemplateApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(daw_thingy::DawThingy::new(cc)))),
     )
 }
 
@@ -50,7 +50,7 @@ fn main() {
             .start(
                 canvas,
                 web_options,
-                Box::new(|cc| Ok(Box::new(daw_thingy::TemplateApp::new(cc)))),
+                Box::new(|cc| Ok(Box::new(daw_thingy::DawThingy::new(cc)))),
             )
             .await;
 
