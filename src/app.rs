@@ -1,12 +1,43 @@
+use std::{
+    fmt::*
+};
+
+#[derive(serde::Deserialize, serde::Serialize, Default, PartialEq)]
+pub enum Tab {
+    #[default]
+    SongEditor,
+    PatternEditor,
+    OscView,
+    Mixer,
+    FreeView
+}
+
+impl Display for Tab {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f,"{}", match self {
+            Tab::SongEditor     => "Song editor",   
+            Tab::PatternEditor  => "Pattern editor",   
+            Tab::OscView        => "Osc. View",   
+            Tab::Mixer          => "Mixer",   
+            Tab::FreeView       => "Windowed view",   
+        })?;
+        Ok(())
+    }
+}
+
+const TABS: [Tab;5] = [Tab::SongEditor, Tab::PatternEditor, Tab::OscView, Tab::Mixer, Tab::FreeView];
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] 
 pub struct DawThingy{
+    cur_tab: Tab
 }
 
 impl Default for DawThingy {
     fn default() -> Self {
         Self {
+            cur_tab: Tab::SongEditor
         }
     }
 }
@@ -49,11 +80,23 @@ impl eframe::App for DawThingy {
         });
         
         egui::TopBottomPanel::top("tabs").show(ctx, |ui| {
-            ui.label("This is where the tabs go"); 
+            ui.horizontal_wrapped(|ui| {
+                for t in TABS{
+                    if ui.selectable_label(t == self.cur_tab, t.to_string()).clicked() {
+                        self.cur_tab = t;
+                    } 
+                }
+            })
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.label("This is where the editor goes"); 
+            match self.cur_tab {
+                Tab::SongEditor     => ui.label("This is the song editor!"),
+                Tab::PatternEditor  => ui.label("I can already forsee all the hours spent in this pattern editor!"),
+                Tab::OscView        => ui.label("I'm sure this will be used for a lot of youtube uploads!"),
+                Tab::Mixer          => ui.label("The bane of my existence, the mixer!"),
+                Tab::FreeView       => ui.label("there will be windows here..."),
+            }
         });
     }
 }
