@@ -2,7 +2,7 @@ use std::{
     fmt::*
 };
 
-#[derive(serde::Deserialize, serde::Serialize, Default, PartialEq)]
+#[derive(serde::Deserialize, serde::Serialize, Default, PartialEq, Clone, Copy)]
 pub enum Tab {
     #[default]
     SongEditor,
@@ -76,19 +76,59 @@ impl eframe::App for DawThingy {
         });
         
         egui::TopBottomPanel::top("buttons").show(ctx, |ui| {
-             ui.label("This is where the buttons go")
+            ui.horizontal_wrapped(|ui| {
+                ui.vertical(|ui| {
+                     ui.horizontal_wrapped(|ui| {
+                        let _ = ui.button("play"); 
+                        let _ = ui.button("pause"); 
+                        let _ = ui.button("record"); 
+                        let _ = ui.button("metronome"); 
+                    });
+                    ui.horizontal_wrapped(|ui| {
+                        ui.vertical(|ui| {
+                            ui.label("4");
+                            ui.label("--");
+                            ui.label("4");
+                        });
+                        ui.vertical(|ui| {
+                            ui.label("155 bpm");
+                            ui.label("volume control");
+                        });
+                    });
+                });
+                
+                ui.vertical(|ui| {
+                    ui.label("0000m"); 
+                    ui.label("0000s"); 
+                    ui.label("000ms"); 
+                });
+                
+                ui.vertical(|ui| {
+                    //the first batch
+                    ui.horizontal_wrapped(|ui| {
+                        for t in &TABS[0..3]{
+                            if ui.selectable_label(*t == self.cur_tab, t.to_string()).clicked() {
+                               self.cur_tab = *t;
+                            } 
+                        }
+                    });
+
+                    //the second batch 
+                    ui.horizontal_wrapped(|ui| {
+                        for t in &TABS[3..5]{
+                            if ui.selectable_label(*t == self.cur_tab, t.to_string()).clicked() {
+                               self.cur_tab = *t;
+                            } 
+                        }
+                    });
+                });
+                
+                ui.centered_and_justified(|ui| {
+                    ui.label("This is the space for the waveform viewer!")
+                });
+           });
         });
         
-        egui::TopBottomPanel::top("tabs").show(ctx, |ui| {
-            ui.horizontal_wrapped(|ui| {
-                for t in TABS{
-                    if ui.selectable_label(t == self.cur_tab, t.to_string()).clicked() {
-                        self.cur_tab = t;
-                    } 
-                }
-            })
-        });
-
         egui::CentralPanel::default().show(ctx, |ui| {
             match self.cur_tab {
                 Tab::SongEditor     => ui.label("This is the song editor!"),
